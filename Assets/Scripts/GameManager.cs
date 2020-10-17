@@ -7,8 +7,11 @@ public class GameManager : MonoBehaviour
     [Header("Mover Settings")]
     public GameObject moverPrefab;
     public List<Vector3> waypoints = new List<Vector3>();
-    public bool followCamera;
     public float wayPointThreshold = 0.5f;
+    public int maxHealth = 1;
+    public bool followCamera;
+    public bool loop;
+    int health;
 
     [Header("Mine Settings")]
     [Range(5f, 25f)]
@@ -20,7 +23,6 @@ public class GameManager : MonoBehaviour
     [Header("Effects Settings")]
     public GameObject collisionEffectPrefab;
     public Transform unusedEffects;
-
 
     [Header("Sound Settings")]
     public AudioSource soundSource;
@@ -49,6 +51,7 @@ public class GameManager : MonoBehaviour
 
         mover = Instantiate(moverPrefab, transform);
         mover.GetComponent<MoverScript>().SetWaypoints(waypoints, wayPointThreshold);
+        health = maxHealth;
     }
 
     public IgnitionScript BeginEffect(Vector3 position, Vector3 lookAt)
@@ -137,17 +140,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ReloadPlayer()
+    {
+        health = maxHealth;
+        mover.transform.position = Vector3.zero;
+    }
+
+    public void ResetGame()
+    {
+        ReloadMines();
+        ReloadPlayer();
+    }
+
     public void PlayerCollision(GameObject collidedMine)
     {
         BeginEffect(collidedMine.transform.position, mover.transform.position);
         collidedMine.SetActive(false);
-        
-        soundSource.PlayOneShot(explosionSound);
 
+        soundSource.PlayOneShot(explosionSound);
+        health--;
+        if (health == 0)
+        {
+            ResetGame();
+        }
     }
 
-    public void WaypointReached()
+    public void WaypointReached(int index)
     {
         soundSource.PlayOneShot(beepSound);
+        if(index == waypoints.Count - 1 && !loop)
+        {
+            ResetGame();
+        }
     }
 }
