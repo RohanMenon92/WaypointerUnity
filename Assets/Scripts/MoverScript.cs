@@ -35,6 +35,7 @@ public class MoverScript : MonoBehaviour
 
         if ((movePoints[pointIndex] - transform.position).magnitude < waypointThreshold)
         {
+            // Check if game should end or loop
             gameManager.WaypointReached(pointIndex);
 
             pointIndex++;
@@ -66,6 +67,7 @@ public class MoverScript : MonoBehaviour
 
     public void SetWaypoints(List<Vector3> waypoints, float threshold)
     {
+        pointIndex = 0;
         waypointThreshold = threshold;
         movePoints = waypoints;
     }

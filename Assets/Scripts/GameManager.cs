@@ -87,18 +87,22 @@ public class GameManager : MonoBehaviour
 
     void CheckCamera()
     {
+
         Transform cameraTransform = Camera.main.transform;
         if (followCamera && cameraTransform.parent != mover.transform)
         {
+            // Check for follow camera
             cameraTransform.SetParent(mover.transform);
             cameraTransform.localPosition = new Vector3(0f , 0.5f, -2.5f);
             cameraTransform.localEulerAngles = Vector3.zero;
         } else if(!followCamera && cameraTransform.parent != transform)
         {
+            // Check for stationary camera
             cameraTransform.SetParent(transform);
             cameraTransform.position = Vector3.zero;
         } else if(!followCamera)
         {
+            // If stationary, do a look at
             cameraTransform.LookAt(mover.transform);
         }
     }
@@ -115,6 +119,10 @@ public class GameManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Space))
         {
             ReloadMines();
+        }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            ResetGame();
         }
     }
 
@@ -144,6 +152,7 @@ public class GameManager : MonoBehaviour
     {
         health = maxHealth;
         mover.transform.position = Vector3.zero;
+        mover.GetComponent<MoverScript>().SetWaypoints(waypoints, wayPointThreshold);
     }
 
     public void ResetGame()
@@ -159,6 +168,8 @@ public class GameManager : MonoBehaviour
 
         soundSource.PlayOneShot(explosionSound);
         health--;
+
+        // Reset the game if collisions have occured
         if (health == 0)
         {
             ResetGame();
@@ -168,6 +179,8 @@ public class GameManager : MonoBehaviour
     public void WaypointReached(int index)
     {
         soundSource.PlayOneShot(beepSound);
+
+        // Reset the game if all waypoints are completed and there is no need to loop
         if(index == waypoints.Count - 1 && !loop)
         {
             ResetGame();
