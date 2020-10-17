@@ -35,7 +35,7 @@ public class MoverScript : MonoBehaviour
 
         if ((movePoints[pointIndex] - transform.position).magnitude < waypointThreshold)
         {
-            gameManager.WaypointReached();
+            gameManager.WaypointReached(pointIndex);
 
             pointIndex++;
             if (pointIndex >= movePoints.Count)
